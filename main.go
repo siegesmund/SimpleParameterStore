@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"strings"
+	"fmt"
 )
 
 
@@ -19,13 +20,19 @@ type structData struct {
 	}
 }
 
-// fields ssm_name, ssm_type
-func GetParameters(obj interface{}, region string) (interface{}, error) {
-
-	var err error
+func newStuctData() structData {
 	data := structData{}
 	data.plain.position = make(map[string]int)
 	data.encrypted.position = make(map[string]int)
+	return data
+}
+
+// fields ssm_name, ssm_type
+func GetParameters(obj interface{}, region string) error {
+
+	var err error
+
+	data := newStuctData()
 
 	// Use reflection to loop over the structs fields,
 	// evaluating and recording the tags
@@ -41,28 +48,41 @@ func GetParameters(obj interface{}, region string) (interface{}, error) {
 		storeParamName := tag.Get("ssm_key")
 		fieldPosition := i
 
-		encrypted := strings.ToUpper(tag.Get("ssm_type")) == "SECURESTRING"
+		// Ignore fields that don't have an ssm_key tag
+		if storeParamName != "" {
 
-		if encrypted {
-			data.encrypted.fields = append(data.encrypted.fields, &storeParamName)
-			data.encrypted.position[storeParamName] = fieldPosition
-		} else {
-			data.plain.fields = append(data.plain.fields, &storeParamName)
-			data.plain.position[storeParamName] = fieldPosition
+			encrypted := strings.ToUpper(tag.Get("ssm_type")) == "SECURESTRING"
+
+			if encrypted {
+				data.encrypted.fields = append(data.encrypted.fields, &storeParamName)
+				data.encrypted.position[storeParamName] = fieldPosition
+			} else {
+				data.plain.fields = append(data.plain.fields, &storeParamName)
+				data.plain.position[storeParamName] = fieldPosition
+			}
 		}
+
 	}
 
 	var params []*ssm.Parameter
 
 	if len(data.plain.fields) > 0 {
+		fmt.Println(*data.plain.fields[0])
 		if plainFields, err := getSSMParameters(data.plain.fields, region, false); err == nil {
 			params = append(params, plainFields...)
+		} else {
+			return err
 		}
 	}
 
 	if len(data.encrypted.fields) > 0 {
+
+		fmt.Println(data.encrypted.fields)
+
 		if secureFields, err := getSSMParameters(data.encrypted.fields, region, true); err == nil {
 			params = append(params, secureFields...)
+		} else {
+			return err
 		}
 	}
 
@@ -78,6 +98,6 @@ func GetParameters(obj interface{}, region string) (interface{}, error) {
 		}
 	}
 
-	return obj, err
+	return err
 
 }

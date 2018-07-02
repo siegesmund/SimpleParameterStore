@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 )
 
-// Fetches a parameter from AWS SSM Parameter Store
+// Fetches a set of parameters from AWS SSM Parameter Store
 func getSSMParameters(keynames []*string, region string, withDecryption bool) ([]*ssm.Parameter, error) {
 
 	var err error
