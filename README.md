@@ -11,6 +11,6 @@ type Parameters struct {
 
 params := Parameters{}
 
-err := GetParameters(&params)
+err := GetParameters(&params, "us-east-1")
 
 ```
