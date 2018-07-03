@@ -11,6 +11,12 @@ type Parameters struct {
 
 params := Parameters{}
 
-err := GetParameters(&params, "us-east-1")
+err := GetParameters(&params, "us-east-1") // Fetch parameter
+
+if err != nil {
+	panic(err)
+}
+
+fmt.Println(Parameters.Postgres) // Print Postgres login string
 
 ```
