@@ -10,29 +10,25 @@ import (
 
 type structData struct {
 	plain struct {
-		fields   []*string       // list of parameter store names
+		fields   []*string      // list of parameter store names
 		position map[string]int // list of names -> struct field position
 	}
 
 	encrypted struct {
 		fields   []*string       // list of parameter store names
-		position map[string]int // list of names -> struct field position
+		position map[string]int  // list of names -> struct field position
 	}
 }
 
-func newStuctData() structData {
+
+
+
+
+func newStuctData(obj *interface{}) structData {
+
 	data := structData{}
 	data.plain.position = make(map[string]int)
 	data.encrypted.position = make(map[string]int)
-	return data
-}
-
-// fields ssm_name, ssm_type
-func GetParameters(obj interface{}, region string) error {
-
-	var err error
-
-	data := newStuctData()
 
 	// Use reflection to loop over the structs fields,
 	// evaluating and recording the tags
@@ -61,8 +57,17 @@ func GetParameters(obj interface{}, region string) error {
 				data.plain.position[storeParamName] = fieldPosition
 			}
 		}
-
 	}
+
+	return data
+}
+
+// fields ssm_name, ssm_type
+func GetParameters(obj interface{}, region string) error {
+
+	var err error
+
+	data := newStuctData(&obj)
 
 	var params []*ssm.Parameter
 
@@ -86,6 +91,8 @@ func GetParameters(obj interface{}, region string) error {
 		}
 	}
 
+	val := reflect.ValueOf(obj).Elem()
+
 	for _, field := range params {
 		if *field.Type == "SecureString" {
 			i := data.encrypted.position[*field.Name]
@@ -99,5 +106,14 @@ func GetParameters(obj interface{}, region string) error {
 	}
 
 	return err
+
+}
+
+func SetParameters() {
+
+}
+
+
+func DeleteParameters() {
 
 }
