@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"strings"
-	"fmt"
 )
 
 
@@ -16,12 +15,12 @@ func (s *Store) Get(obj interface{}) error {
 
 	var err error
 
-	data := newStuctData(&obj)
+	data := newStuctData(obj)
 
 	var params []*ssm.Parameter
 
 	if len(data.plain.fields) > 0 {
-		fmt.Println(*data.plain.fields[0])
+
 		if plainFields, err := getParameters(data.plain.fields, s.Region, false); err == nil {
 			params = append(params, plainFields...)
 		} else {
@@ -30,8 +29,6 @@ func (s *Store) Get(obj interface{}) error {
 	}
 
 	if len(data.encrypted.fields) > 0 {
-
-		fmt.Println(data.encrypted.fields)
 
 		if secureFields, err := getParameters(data.encrypted.fields, s.Region, true); err == nil {
 			params = append(params, secureFields...)
@@ -106,7 +103,7 @@ type structData struct {
 
 
 
-func newStuctData(obj *interface{}) structData {
+func newStuctData(obj interface{}) structData {
 
 	data := structData{}
 	data.plain.position = make(map[string]int)
