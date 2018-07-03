@@ -7,21 +7,15 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm"
 )
 
-func setup() {
+func setupSSM() {
 	putParameter("TEST_SECURE", "TEST_VALUE_SECURE", "SecureString", "This is a test created parameter", "us-east-1", false)
 	putParameter("TEST_PLAIN", "TEST_VALUE_PLAIN", "String", "This is a test created parameter", "us-east-1", false)
 	putParameter("TEST_DELETE", "TEST_DELETE_PLAIN", "String", "This is a test created parameter", "us-east-1", false)
 }
 
-func teardown() {
+func teardownSSM() {
 	deleteParameter("TEST_SECURE", "us-east-1")
 	deleteParameter("TEST_PLAIN", "us-east-1")
-}
-
-func TestMain(m *testing.M) {
-	setup()
-	m.Run()
-	teardown()
 }
 
 
