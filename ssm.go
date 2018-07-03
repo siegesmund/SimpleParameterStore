@@ -30,6 +30,24 @@ func service(region string) (*ssm.SSM, error) {
 
 }
 
+func getParameter(keyname string, region string, withDecryption bool) (*ssm.Parameter, error) {
+
+	var err error
+
+	ssmsvc, err := service(region)
+
+	if err != nil {
+		return nil, err
+	}
+
+	params, err := ssmsvc.GetParameter(&ssm.GetParameterInput{
+		Name:           &keyname,
+		WithDecryption: &withDecryption,
+	})
+
+	return params.Parameter, err
+}
+
 
 // Fetches a set of parameters from AWS SSM Parameter Store
 func getParameters(keynames []*string, region string, withDecryption bool) ([]*ssm.Parameter, error) {
