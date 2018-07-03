@@ -18,7 +18,7 @@ func TestStoreGetParameter(t *testing.T) {
 }
 
 func TestStorePutParameter(t *testing.T) {
-	version, _ := store.PutParameter("STORE_PUT_TEST", "STORE_PUT_TEST_VALUE", "String","", true)
+	version, _ := store.PutParameter("STORE_PUT_TEST", "STORE_PUT_TEST_VALUE", "String","This is a test created parameter", true)
 	assert.Equal(t, 1, version)
 	param, _ := store.GetParameter("STORE_PUT_TEST", false)
 	assert.Equal(t, "STORE_PUT_TEST_VALUE", param)
