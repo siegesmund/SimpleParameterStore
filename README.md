@@ -17,6 +17,6 @@ if err != nil {
 	panic(err)
 }
 
-fmt.Println(Parameters.Postgres) // Print Postgres login string
+fmt.Println(params.Postgres) // Print Postgres login string
 
 ```
