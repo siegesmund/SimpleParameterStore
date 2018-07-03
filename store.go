@@ -122,7 +122,7 @@ func newStuctData(obj interface{}) structData {
 		tag := typeField.Tag
 
 		// Store parameter name
-		storeParamName := tag.Get("ssm_key")
+		storeParamName := tag.Get("ssm_name")
 		fieldPosition := i
 
 		// Ignore fields that don't have an ssm_key tag

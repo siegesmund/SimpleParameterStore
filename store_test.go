@@ -6,9 +6,9 @@ import (
 )
 
 type TestStruct struct {
-	A string `ssm_key:"STORE_STRUCT_TEST_A"`
-	B string `ssm_key:"STORE_STRUCT_TEST_B"`
-	C string `ssm_key:"STORE_STRUCT_TEST_C" ssm_type:"SecureString"`
+	A string `ssm_name:"STORE_STRUCT_TEST_A"`
+	B string `ssm_name:"STORE_STRUCT_TEST_B"`
+	C string `ssm_name:"STORE_STRUCT_TEST_C" ssm_type:"SecureString"`
 }
 
 
