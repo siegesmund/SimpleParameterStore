@@ -1,4 +1,4 @@
-package SimpleSSM
+package simplestore
 
 import (
 	"github.com/aws/aws-sdk-go/service/ssm"
@@ -7,7 +7,7 @@ import (
 )
 
 // Creates the aws session
-func ssmService(region string) (*ssm.SSM, error) {
+func service(region string) (*ssm.SSM, error) {
 
 	config := aws.Config{}
 
@@ -32,12 +32,12 @@ func ssmService(region string) (*ssm.SSM, error) {
 
 
 // Fetches a set of parameters from AWS SSM Parameter Store
-func getSSMParameters(keynames []*string, region string, withDecryption bool) ([]*ssm.Parameter, error) {
+func getParameters(keynames []*string, region string, withDecryption bool) ([]*ssm.Parameter, error) {
 
 	var err error
 
 
-	ssmsvc, err := ssmService(region)
+	ssmsvc, err := service(region)
 
 	if err != nil {
 		return nil, err
@@ -52,11 +52,11 @@ func getSSMParameters(keynames []*string, region string, withDecryption bool) ([
 }
 
 // Puts an ssm parameter
-func putSSMParameter(name, value, parameterType, description, region string, overwrite bool) (*ssm.PutParameterOutput, error) {
+func putParameter(name, value, parameterType, description, region string, overwrite bool) (*ssm.PutParameterOutput, error) {
 
 	var err error
 
-	ssmsvc, err := ssmService(region)
+	ssmsvc, err := service(region)
 
 	if err != nil {
 		return nil, err
@@ -78,11 +78,11 @@ func putSSMParameter(name, value, parameterType, description, region string, ove
 	return ssmsvc.PutParameter(&input)
 }
 
-func deleteSSMParameter(name, region string) (*ssm.DeleteParameterOutput, error) {
+func deleteParameter(name, region string) (*ssm.DeleteParameterOutput, error) {
 
 	var err error
 
-	ssmsvc, err := ssmService(region)
+	ssmsvc, err := service(region)
 
 	if err != nil {
 		return nil, err
@@ -92,11 +92,11 @@ func deleteSSMParameter(name, region string) (*ssm.DeleteParameterOutput, error)
 
 }
 
-func deleteSSMParameters(names []*string, region string) (*ssm.DeleteParametersOutput, error) {
+func deleteParameters(names []*string, region string) (*ssm.DeleteParametersOutput, error) {
 
 	var err error
 
-	ssmsvc, err := ssmService(region)
+	ssmsvc, err := service(region)
 
 	if err != nil {
 		return nil, err

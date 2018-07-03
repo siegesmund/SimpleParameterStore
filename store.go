@@ -1,4 +1,4 @@
-package SimpleSSM
+package simplestore
 
 import (
 	"reflect"
@@ -6,6 +6,57 @@ import (
 	"strings"
 	"fmt"
 )
+
+
+type Store struct {
+	Region string
+}
+
+func (s *Store) Get(obj interface{}) error {
+
+	var err error
+
+	data := newStuctData(&obj)
+
+	var params []*ssm.Parameter
+
+	if len(data.plain.fields) > 0 {
+		fmt.Println(*data.plain.fields[0])
+		if plainFields, err := getParameters(data.plain.fields, s.Region, false); err == nil {
+			params = append(params, plainFields...)
+		} else {
+			return err
+		}
+	}
+
+	if len(data.encrypted.fields) > 0 {
+
+		fmt.Println(data.encrypted.fields)
+
+		if secureFields, err := getParameters(data.encrypted.fields, s.Region, true); err == nil {
+			params = append(params, secureFields...)
+		} else {
+			return err
+		}
+	}
+
+	val := reflect.ValueOf(obj).Elem()
+
+	for _, field := range params {
+		if *field.Type == "SecureString" {
+			i := data.encrypted.position[*field.Name]
+			val.Field(i).SetString(*field.Value)
+		}
+
+		if *field.Type == "String" {
+			i := data.plain.position[*field.Name]
+			val.Field(i).SetString(*field.Value)
+		}
+	}
+
+	return err
+}
+
 
 
 type structData struct {
@@ -62,6 +113,8 @@ func newStuctData(obj *interface{}) structData {
 	return data
 }
 
+
+/*
 // fields ssm_name, ssm_type
 func GetParameters(obj interface{}, region string) error {
 
@@ -73,7 +126,7 @@ func GetParameters(obj interface{}, region string) error {
 
 	if len(data.plain.fields) > 0 {
 		fmt.Println(*data.plain.fields[0])
-		if plainFields, err := getSSMParameters(data.plain.fields, region, false); err == nil {
+		if plainFields, err := getParameters(data.plain.fields, region, false); err == nil {
 			params = append(params, plainFields...)
 		} else {
 			return err
@@ -84,7 +137,7 @@ func GetParameters(obj interface{}, region string) error {
 
 		fmt.Println(data.encrypted.fields)
 
-		if secureFields, err := getSSMParameters(data.encrypted.fields, region, true); err == nil {
+		if secureFields, err := getParameters(data.encrypted.fields, region, true); err == nil {
 			params = append(params, secureFields...)
 		} else {
 			return err
@@ -117,3 +170,4 @@ func SetParameters() {
 func DeleteParameters() {
 
 }
+*/
